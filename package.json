@@ -14,10 +14,11 @@
     "axios": "^1.15.2",
     "commander": "^14.0.3",
     "fs": "^0.0.1-security",
+    "open": "^11.0.0",
     "os": "^0.1.2",
     "path": "^0.12.7"
   },
-   "bin": {
+  "bin": {
     "insighta": "./index.js"
   }
 }
