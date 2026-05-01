@@ -1,19 +1,30 @@
 #!/usr/bin/env node
 
 const { Command } = require("commander");
-const { login } = require("./command/login");
-const { getProfiles } = require("./command/profiles");
-
 const program = new Command();
+const figlet = require("figlet");
+const chalk = require("chalk");
+
+const auth = require("./command/auth");
+const profiles = require("./command/profiles");
+
 
 program
-  .command("login")
-  .description("Login via GitHub")
-  .action(login);
+  .name("insighta")
+  .description("Insighta CLI")
+  .version("1.0.0");
 
+// Auth
+program.command("login").action(auth.login);
+program.command("logout").action(auth.logout);
+
+// Profiles
+program.command("profiles:list").action(profiles.list);
 program
-  .command("profiles")
-  .description("Fetch profiles")
-  .action(getProfiles);
+  .command("profiles:create")
+  .option("--name <name>")
+  .action(profiles.create);
 
-program.parse(process.argv);
+program.command("profiles:export").action(profiles.exportCSV);
+
+program.parse();
