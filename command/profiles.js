@@ -1,16 +1,17 @@
 const api = require("../api");
-const ora = require("ora");
+const ora = require("ora").default;
 
 exports.list = async () => {
   const spinner = ora("Fetching profiles...").start();
 
   try {
-    const res = await api.get("/profiles");
+    const res = await api.get("/profiles/");
     spinner.stop();
 
     console.table(res.data.data);
   } catch (err) {
     spinner.fail("Failed to fetch profiles");
+    console.error(err.response?.data || err.message);
   }
 };
 
@@ -26,6 +27,7 @@ exports.create = async (options) => {
     console.log(res.data);
   } catch (err) {
     spinner.fail("Failed to create profile");
+     console.error(err.response?.data || err.message);
   }
 };
 
@@ -50,5 +52,64 @@ exports.exportCSV = async () => {
     });
   } catch (err) {
     spinner.fail("Export failed");
+     console.error(err.response?.data || err.message);
+  }
+};
+
+exports.search = async (options) => {
+  const spinner = ora("Searching profiles...").start();
+
+  try {
+    if (!options.q) {
+      spinner.fail("Missing query. Use --q \"your query\"");
+      return;
+    }
+
+    const res = await api.get("/profiles/search", {
+      params: { q: options.q },
+    });
+
+    spinner.stop();
+    console.table(res.data.data);
+  } catch (err) {
+    spinner.fail("Search failed");
+    console.error(err.response?.data || err.message);
+  }
+};
+
+exports.getOne = async (id) => {
+  const spinner = ora("Fetching profile...").start();
+
+  try {
+    if (!id) {
+      spinner.fail("Please provide profile ID");
+      return;
+    }
+
+    const res = await api.get(`/profiles/${id}`);
+
+    spinner.stop();
+    console.log(res.data.data);
+  } catch (err) {
+    spinner.fail("Failed to fetch profile");
+    console.error(err.response?.data || err.message);
+  }
+};
+
+exports.delete = async (id) => {
+  const spinner = ora("Deleting profile...").start();
+
+  try {
+    if (!id) {
+      spinner.fail("Please provide profile ID");
+      return;
+    }
+
+    await api.delete(`/profiles/${id}`);
+
+    spinner.succeed("Profile deleted");
+  } catch (err) {
+    spinner.fail("Delete failed");
+    console.error(err.response?.data || err.message);
   }
 };
