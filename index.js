@@ -5,26 +5,54 @@ const program = new Command();
 const figlet = require("figlet");
 const chalk = require("chalk");
 
-const auth = require("./command/auth");
+const { logout } = require("./command/logout");
+const { login } = require("./command/login");
 const profiles = require("./command/profiles");
 
-
-program
-  .name("insighta")
-  .description("Insighta CLI")
-  .version("1.0.0");
+program.name("insighta").description("Insighta CLI").version("1.0.0");
 
 // Auth
-program.command("login").action(auth.login);
-program.command("logout").action(auth.logout);
+program.command("login").action(login);
+program.command("logout").action(logout);
 
 // Profiles
-program.command("profiles:list").action(profiles.list);
-program
-  .command("profiles:create")
+const profilesCmd = program.command("profiles").description("Manage profiles");
+
+profilesCmd.action(() => {
+  profilesCmd.help();
+});
+
+profilesCmd
+  .command("list")
+  .description("List all profiles")
+  .action(profiles.list);
+
+profilesCmd
+  .command("create")
+  .description("Create a profile")
   .option("--name <name>")
   .action(profiles.create);
 
-program.command("profiles:export").action(profiles.exportCSV);
+profilesCmd
+  .command("export")
+  .description("Export profiles to CSV")
+  .action(profiles.exportCSV);
+
+profilesCmd
+  .command("search")
+  .description("Search profiles")
+  .option("--q <query>", "Search query")
+  .action(profiles.search);
+
+profilesCmd
+  .command("get <id>")
+  .description("Get a single profile")
+  .action(profiles.getOne);
+
+profilesCmd
+  .command("delete <id>")
+  .description("Delete a profile (admin only)")
+  .action(profiles.delete);
 
 program.parse();
+
